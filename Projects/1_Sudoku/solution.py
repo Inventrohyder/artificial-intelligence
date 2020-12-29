@@ -1,16 +1,19 @@
-
 from utils import rows, cols, cross, extract_units, extract_peers, \
                 boxes, grid2values, display, history
 
-
 row_units = [cross(r, cols) for r in rows]
 column_units = [cross(rows, c) for c in cols]
-square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
+square_units = [
+    cross(rs, cs) for rs in ('ABC', 'DEF', 'GHI')
+    for cs in ('123', '456', '789')
+]
 unitlist = row_units + column_units + square_units
 
 # TODO: Update the unit list to add the new diagonal units
-unitlist = unitlist
-
+diagonal_1 = [x[0] + x[1] for x in zip(rows, cols)]
+diagonal_2 = [x[0] + x[1] for x in zip(rows, cols[::-1])]
+diagonal_units = diagonal_1 + diagonal_2
+unitlist = unitlist + diagonal_units
 
 # Must be called after all units (including diagonals) are added to the unitlist
 units = extract_units(unitlist, boxes)
@@ -176,4 +179,6 @@ if __name__ == "__main__":
     except SystemExit:
         pass
     except:
-        print('We could not visualize your board due to a pygame issue. Not a problem! It is not a requirement.')
+        print(
+            'We could not visualize your board due to a pygame issue. Not a problem! It is not a requirement.'
+        )
