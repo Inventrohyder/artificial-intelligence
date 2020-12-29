@@ -77,8 +77,13 @@ def eliminate(values):
     dict
         The values dictionary with the assigned values eliminated from peers
     """
-    # TODO: Copy your code from the classroom to complete this function
-    raise NotImplementedError
+    output = values.copy()
+    for key, value in values.items():
+        if len(value) == 1:
+            to_check = peers[key]
+            for peer_key in to_check:
+                output[peer_key] = output[peer_key].replace(value, '')
+    return output
 
 
 def only_choice(values):
@@ -101,8 +106,19 @@ def only_choice(values):
     -----
     You should be able to complete this function by copying your code from the classroom
     """
-    # TODO: Copy your code from the classroom to complete this function
-    raise NotImplementedError
+    for the_unit in unitlist:
+        counts = {}
+        for unit in the_unit:
+            for val in values[unit]:
+                if val in counts:
+                    counts[val].append(unit)
+                else:
+                    counts[val] = [unit]
+        for val, units in counts.items():
+            if len(units) == 1:
+                values[units[0]] = str(val) 
+    
+    return values
 
 
 def reduce_puzzle(values):
@@ -119,8 +135,28 @@ def reduce_puzzle(values):
         The values dictionary after continued application of the constraint strategies
         no longer produces any changes, or False if the puzzle is unsolvable 
     """
-    # TODO: Copy your code from the classroom and modify it to complete this function
-    raise NotImplementedError
+    stalled = False
+    while not stalled:
+        # Check how many boxes have a determined value
+        solved_values_before = len([box for box in values.keys() if len(values[box]) == 1])
+
+        # Use the Eliminate Strategy
+        eliminate(values)
+
+        # Use the Only Choice Strategy
+        only_choice(values)
+
+        # Use the Naked Twins Strategy
+        naked_twins(values)
+
+        # Check how many boxes have a determined value, to compare
+        solved_values_after = len([box for box in values.keys() if len(values[box]) == 1])
+        # If no new values were added, stop the loop.
+        stalled = solved_values_before == solved_values_after
+        # Sanity check, return False if there is a box with zero available values:
+        if len([box for box in values.keys() if len(values[box]) == 0]):
+            return False
+    return values
 
 
 def search(values):
@@ -142,8 +178,41 @@ def search(values):
     You should be able to complete this function by copying your code from the classroom
     and extending it to call the naked twins strategy.
     """
-    # TODO: Copy your code from the classroom to complete this function
-    raise NotImplementedError
+    # First, reduce the puzzle using the previous function
+    output = reduce_puzzle(values)
+    
+    if output is False:
+        return False
+
+    # Choose one of the unfilled squares with the fewest possibilities
+    l_poss = None  # lowest possibilities
+    
+    for box in boxes:
+        if len(values[box]) > 1 and l_poss is None :
+            l_poss = box
+        else:
+            if  len(values[box]) > 1 and len(values[box]) < len(values[l_poss]):
+                l_poss = box
+                
+    
+    solved = True           
+    for box in boxes:
+        if len(values[box]) != 1:
+            solved = False
+            break
+    if solved:
+        return output
+    
+    # Now use recursion to solve each one of the resulting sudokus, and if one returns a value (not False), return that answer!
+    
+    options = values[l_poss]
+    
+    for option in options:
+        new_values = values.copy()
+        new_values[l_poss] = option
+        out = search(new_values)
+        if out:
+            return out
 
 
 def solve(grid):
