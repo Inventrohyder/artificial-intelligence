@@ -1,5 +1,6 @@
 
-from utils import *
+from utils import rows, cols, cross, extract_units, extract_peers, \
+                boxes, grid2values, display, history
 
 
 row_units = [cross(r, cols) for r in rows]
