@@ -9,7 +9,6 @@ square_units = [
 ]
 unitlist = row_units + column_units + square_units
 
-# TODO: Update the unit list to add the new diagonal units
 diagonal_1 = [x[0] + x[1] for x in zip(rows, cols)]
 diagonal_2 = [x[0] + x[1] for x in zip(rows, cols[::-1])]
 diagonal_units = [diagonal_1] + [diagonal_2]
