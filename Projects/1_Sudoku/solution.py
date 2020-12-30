@@ -1,5 +1,5 @@
 from utils import rows, cols, cross, extract_units, extract_peers, \
-                boxes, grid2values, display, history
+                boxes, grid2values, display, history, assign_value
 
 row_units = [cross(r, cols) for r in rows]
 column_units = [cross(rows, c) for c in cols]
@@ -64,7 +64,8 @@ def naked_twins(values):
             if values[box_a] == values[box_b] and len(values[box_a]) == 2:
                 for peer in peers[box_a].intersection(peers[box_b]):
                     for digit in values[box_a]:
-                        out[peer] = out[peer].replace(digit, '')
+                        new_val = out[peer].replace(digit, '')
+                        out = assign_value(out, peer, new_val)
     return out
 
 
@@ -89,7 +90,8 @@ def eliminate(values):
         if len(value) == 1:
             to_check = peers[key]
             for peer_key in to_check:
-                output[peer_key] = output[peer_key].replace(value, '')
+                new_val = output[peer_key].replace(value, '')
+                output = assign_value(output, peer_key, new_val)
     return output
 
 
@@ -123,7 +125,7 @@ def only_choice(values):
                     counts[val] = [unit]
         for val, units in counts.items():
             if len(units) == 1:
-                values[units[0]] = str(val) 
+                values = assign_value(values, units[0], str(val))
     
     return values
 
@@ -216,7 +218,7 @@ def search(values):
     
     for option in options:
         new_values = values.copy()
-        new_values[l_poss] = option
+        new_values = assign_value(new_values, l_poss, option)
         out = search(new_values)
         if out:
             return out
